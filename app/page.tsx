@@ -33,14 +33,14 @@ export default function Home() {
     }
   };
 
-  // Helper to convert Google Drive viewer link to direct image link
-  const getDirectImageUrl = (driveLink: string) => {
+  // Helper to convert Google Drive viewer link to direct embed link
+  const getEmbedUrl = (driveLink: string) => {
     if (!driveLink) return '';
     try {
       const url = new URL(driveLink);
       const id = url.searchParams.get('id');
       if (id) {
-        return `https://drive.google.com/uc?export=view&id=${id}`;
+        return `https://drive.google.com/file/d/${id}/preview`;
       }
       return driveLink;
     } catch {
@@ -208,31 +208,13 @@ export default function Home() {
                                 Open Original <ExternalLink className="w-3 h-3" />
                               </a>
                             </div>
-                            <a 
-                              href={result['Upload Aadhaar Card (Front Side)']} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="block relative aspect-[1.58] rounded-2xl overflow-hidden bg-white/5 ring-1 ring-white/10 hover:ring-indigo-500/50 transition-all duration-300 group"
-                            >
-                              <img 
-                                src={getDirectImageUrl(result['Upload Aadhaar Card (Front Side)'])} 
-                                alt="Aadhar Front" 
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = 'none';
-                                  e.currentTarget.parentElement?.classList.add('flex', 'items-center', 'justify-center', 'flex-col', 'gap-2');
-                                  const div = document.createElement('div');
-                                  div.className = 'text-slate-500 flex flex-col items-center gap-2';
-                                  div.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><span class="text-sm font-medium">Image Preview Unavailable</span><span class="text-xs text-indigo-400">Click to view on Google Drive</span>';
-                                  e.currentTarget.parentElement?.appendChild(div);
-                                }}
+                            <div className="relative aspect-[1.58] rounded-2xl overflow-hidden bg-white/5 ring-1 ring-white/10 hover:ring-indigo-500/50 transition-all duration-300">
+                              <iframe 
+                                src={getEmbedUrl(result['Upload Aadhaar Card (Front Side)'])} 
+                                className="w-full h-full border-0 absolute inset-0"
+                                allow="autoplay"
                               />
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                <span className="bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
-                                  <ImageIcon className="w-4 h-4"/> View Full Image
-                                </span>
-                              </div>
-                            </a>
+                            </div>
                           </div>
                         )}
 
@@ -245,31 +227,13 @@ export default function Home() {
                                 Open Original <ExternalLink className="w-3 h-3" />
                               </a>
                             </div>
-                            <a 
-                              href={result['Upload Aadhaar Card (Back Side)']} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="block relative aspect-[1.58] rounded-2xl overflow-hidden bg-white/5 ring-1 ring-white/10 hover:ring-indigo-500/50 transition-all duration-300 group"
-                            >
-                              <img 
-                                src={getDirectImageUrl(result['Upload Aadhaar Card (Back Side)'])} 
-                                alt="Aadhar Back" 
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = 'none';
-                                  e.currentTarget.parentElement?.classList.add('flex', 'items-center', 'justify-center', 'flex-col', 'gap-2');
-                                  const div = document.createElement('div');
-                                  div.className = 'text-slate-500 flex flex-col items-center gap-2';
-                                  div.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><span class="text-sm font-medium">Image Preview Unavailable</span><span class="text-xs text-indigo-400">Click to view on Google Drive</span>';
-                                  e.currentTarget.parentElement?.appendChild(div);
-                                }}
+                            <div className="relative aspect-[1.58] rounded-2xl overflow-hidden bg-white/5 ring-1 ring-white/10 hover:ring-indigo-500/50 transition-all duration-300">
+                              <iframe 
+                                src={getEmbedUrl(result['Upload Aadhaar Card (Back Side)'])} 
+                                className="w-full h-full border-0 absolute inset-0"
+                                allow="autoplay"
                               />
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                <span className="bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
-                                  <ImageIcon className="w-4 h-4"/> View Full Image
-                                </span>
-                              </div>
-                            </a>
+                            </div>
                           </div>
                         )}
                       </div>
