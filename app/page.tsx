@@ -1,13 +1,30 @@
 'use client';
 
-import { useState } from 'react';
-import { Search, Loader2, User, Phone, Mail, Building, MapPin, CreditCard, Image as ImageIcon, ExternalLink, CalendarDays } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Search, Loader2, User, Phone, Mail, Building, MapPin, CreditCard, Image as ImageIcon, ExternalLink, CalendarDays, LogOut, ShieldCheck } from 'lucide-react';
 
 export default function Home() {
   const [aadhar, setAadhar] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<any[] | null>(null);
   const [error, setError] = useState('');
+  const [user, setUser] = useState<{ email: string; role: string } | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(res => res.json())
+      .then(data => {
+        if (data.user) setUser(data.user);
+      })
+      .catch(console.error);
+  }, []);
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/login');
+  };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,9 +66,41 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0a0f1c] flex flex-col items-center py-20 px-4 sm:px-6 lg:px-8 font-sans selection:bg-indigo-500/30">
+    <main className="min-h-screen bg-[#0a0f1c] flex flex-col items-center pt-8 pb-20 px-4 sm:px-6 lg:px-8 font-sans selection:bg-indigo-500/30">
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
       <div className="absolute top-0 -translate-y-12 inset-x-0 h-[500px] bg-gradient-to-b from-indigo-500/20 via-purple-500/5 to-transparent blur-3xl pointer-events-none"></div>
+
+      {/* Navbar */}
+      <div className="w-full max-w-7xl flex justify-end items-center gap-4 relative z-10 mb-8">
+        {user && (
+          <div className="flex items-center gap-4 bg-[#111827]/80 backdrop-blur-xl px-6 py-3 rounded-2xl ring-1 ring-white/10 shadow-lg">
+            <span className="text-slate-300 font-medium flex items-center gap-2">
+              <User className="w-4 h-4 text-indigo-400" />
+              {user.email}
+            </span>
+            <div className="w-px h-4 bg-white/10"></div>
+            {user.role === 'admin' && (
+              <>
+                <button
+                  onClick={() => router.push('/admin')}
+                  className="text-indigo-400 hover:text-indigo-300 font-medium text-sm flex items-center gap-1.5 transition-colors"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  Admin Panel
+                </button>
+                <div className="w-px h-4 bg-white/10"></div>
+              </>
+            )}
+            <button
+              onClick={handleLogout}
+              className="text-red-400 hover:text-red-300 font-medium text-sm flex items-center gap-1.5 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+          </div>
+        )}
+      </div>
 
       <div className="w-full max-w-5xl space-y-16 relative z-10">
         {/* Header Section */}
