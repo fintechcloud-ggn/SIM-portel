@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { signToken } from '@/lib/auth';
 import { cookies } from 'next/headers';
-import { getUsers } from '@/lib/users';
+
+const FIXED_USERS = [
+  { id: 1, email: 'admin@example.com', password: 'admin', role: 'admin', createdAt: new Date().toISOString() },
+  { id: 2, email: 'airtel@example.com', password: 'airtel', role: 'viewer', createdAt: new Date().toISOString() },
+  { id: 3, email: 'jio@example.com', password: 'jio', role: 'viewer', createdAt: new Date().toISOString() }
+];
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,9 +16,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
-    // Find user in the JSON file
-    const users = getUsers();
-    const user = users.find((u: any) => u.email === email);
+    // Find user in the fixed array
+    const user = FIXED_USERS.find((u: any) => u.email === email);
 
     if (!user) {
       return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 });
