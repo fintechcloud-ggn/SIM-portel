@@ -25,7 +25,7 @@ export default function AdminDashboard() {
     fetchUsers();
   }, []);
 
-  const fetchUsers = async () => {
+  async function fetchUsers() {
     try {
       const res = await fetch('/api/admin/users');
       if (res.status === 401) {

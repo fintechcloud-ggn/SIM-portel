@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user in the fixed array
-    const user = FIXED_USERS.find((u: any) => u.email === email);
+    const user = FIXED_USERS.find((u) => u.email === email);
 
     if (!user) {
       return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 });
