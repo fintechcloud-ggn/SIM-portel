@@ -67,7 +67,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#0a0f1c] flex flex-col items-center pt-8 pb-20 px-4 sm:px-6 lg:px-8 font-sans selection:bg-indigo-500/30">
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
+      <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
       <div className="absolute top-0 -translate-y-12 inset-x-0 h-[500px] bg-gradient-to-b from-indigo-500/20 via-purple-500/5 to-transparent blur-3xl pointer-events-none"></div>
 
       {/* Navbar */}

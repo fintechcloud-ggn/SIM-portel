@@ -1,8 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
-import bcrypt from 'bcryptjs';
 import { signToken } from '@/lib/auth';
 import { cookies } from 'next/headers';
+
+// Hardcoded users for authentication instead of a database
+const USERS = [
+  {
+    id: 1,
+    email: 'admin@example.com',
+    password: 'admin', // simple password for testing
+    role: 'admin',
+  },
+  {
+    id: 2,
+    email: 'user@example.com',
+    password: 'user', // simple password for testing
+    role: 'user',
+  },
+];
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,17 +26,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
-    // Find user
-    const stmt = db.prepare('SELECT * FROM users WHERE email = ?');
-    const user = stmt.get(email) as any;
+    // Find user in the hardcoded array
+    const user = USERS.find((u) => u.email === email);
 
     if (!user) {
       return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 });
     }
 
-    // Verify password
-    const isPasswordValid = bcrypt.compareSync(password, user.passwordHash);
-    if (!isPasswordValid) {
+    // Verify password directly
+    if (user.password !== password) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
 

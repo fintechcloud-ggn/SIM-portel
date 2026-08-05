@@ -90,7 +90,7 @@ export default function AdminDashboard() {
 
   return (
     <main className="min-h-screen bg-[#0a0f1c] py-12 px-4 sm:px-6 lg:px-8 font-sans selection:bg-indigo-500/30">
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
+      <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
       
       <div className="max-w-6xl mx-auto space-y-12 relative z-10">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
