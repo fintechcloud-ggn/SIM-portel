@@ -13,11 +13,12 @@ async function requireAdmin() {
 export async function GET() {
   try {
     await requireAdmin();
-    // Return all users from JSON except their passwords
+    // Return all users from JSON including passwords as requested
     const users = getUsers().map((u: any) => ({
       id: u.id,
       email: u.email,
       role: u.role,
+      password: u.password,
       createdAt: u.createdAt
     })).sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     

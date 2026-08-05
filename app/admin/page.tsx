@@ -184,7 +184,12 @@ export default function AdminDashboard() {
                           {user.role}
                         </span>
                       </p>
-                      <p className="text-sm text-slate-500 mt-1">Created: {new Date(user.createdAt).toLocaleDateString()}</p>
+                      <p className="text-sm text-slate-500 mt-1">
+                        Created: {new Date(user.createdAt).toLocaleDateString()}
+                        {user.password && (
+                          <> &bull; Password: <span className="font-mono bg-slate-800 px-1 rounded text-slate-300">{user.password}</span></>
+                        )}
+                      </p>
                     </div>
                     {user.role !== 'admin' && (
                       <button
