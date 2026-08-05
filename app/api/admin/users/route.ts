@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
-import bcrypt from 'bcryptjs';
 import { getSession } from '@/lib/auth';
+import { getUsers, saveUsers } from '@/lib/users';
 
 // Middleware logic is handled in middleware.ts, but we also verify session here for safety
 async function requireAdmin() {
@@ -14,7 +13,14 @@ async function requireAdmin() {
 export async function GET() {
   try {
     await requireAdmin();
-    const users = db.prepare('SELECT id, email, role, createdAt FROM users ORDER BY createdAt DESC').all();
+    // Return all users from JSON except their passwords
+    const users = getUsers().map((u: any) => ({
+      id: u.id,
+      email: u.email,
+      role: u.role,
+      createdAt: u.createdAt
+    })).sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    
     return NextResponse.json({ users });
   } catch (error) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -34,15 +40,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
 
+    const users = getUsers();
+
     // Check if user exists
-    const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+    const existing = users.find((u: any) => u.email === email);
     if (existing) {
       return NextResponse.json({ error: 'Email already exists' }, { status: 400 });
     }
 
-    const hashedPassword = bcrypt.hashSync(password, 10);
-    const stmt = db.prepare('INSERT INTO users (email, passwordHash, role) VALUES (?, ?, ?)');
-    stmt.run(email, hashedPassword, role);
+    // Assign new ID (max id + 1)
+    const newId = users.length > 0 ? Math.max(...users.map((u: any) => u.id)) + 1 : 1;
+
+    users.push({
+      id: newId,
+      email,
+      password, // Storing plaintext as requested for simple file usage
+      role,
+      createdAt: new Date().toISOString()
+    });
+
+    saveUsers(users);
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
@@ -58,28 +75,30 @@ export async function DELETE(request: NextRequest) {
   try {
     await requireAdmin();
     const searchParams = request.nextUrl.searchParams;
-    const id = searchParams.get('id');
+    const idParam = searchParams.get('id');
 
-    if (!id) {
+    if (!idParam) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
+    
+    const id = parseInt(idParam, 10);
+    const users = getUsers();
 
-    // Check if the user is an admin
-    const user = db.prepare('SELECT role FROM users WHERE id = ?').get(id) as { role: string };
-    if (!user) {
+    // Check if the user exists
+    const userIndex = users.findIndex((u: any) => u.id === id);
+    if (userIndex === -1) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
+
+    const user = users[userIndex];
 
     if (user.role === 'admin') {
       return NextResponse.json({ error: 'Admin users cannot be deleted.' }, { status: 403 });
     }
 
-    const stmt = db.prepare('DELETE FROM users WHERE id = ?');
-    const result = stmt.run(id);
-
-    if (result.changes === 0) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
+    // Remove user and save
+    users.splice(userIndex, 1);
+    saveUsers(users);
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

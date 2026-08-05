@@ -1,22 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { signToken } from '@/lib/auth';
 import { cookies } from 'next/headers';
-
-// Hardcoded users for authentication instead of a database
-const USERS = [
-  {
-    id: 1,
-    email: 'admin@example.com',
-    password: 'admin', // simple password for testing
-    role: 'admin',
-  },
-  {
-    id: 2,
-    email: 'user@example.com',
-    password: 'user', // simple password for testing
-    role: 'user',
-  },
-];
+import { getUsers } from '@/lib/users';
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,8 +11,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
-    // Find user in the hardcoded array
-    const user = USERS.find((u) => u.email === email);
+    // Find user in the JSON file
+    const users = getUsers();
+    const user = users.find((u: any) => u.email === email);
 
     if (!user) {
       return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 });
