@@ -12,5 +12,12 @@
     "password": "user",
     "role": "viewer",
     "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "email": "test@example.com",
+    "password": "test",
+    "role": "admin",
+    "createdAt": "2026-08-05T06:06:01.681Z"
   }
 ]
